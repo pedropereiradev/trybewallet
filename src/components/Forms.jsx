@@ -9,6 +9,8 @@ class Forms extends Component {
   constructor() {
     super();
 
+    this.handleChange = this.handleChange.bind(this);
+
     this.state = {
       value: 0,
       description: '',
@@ -31,10 +33,16 @@ class Forms extends Component {
     });
   }
 
+  handleChange({ target }) {
+    const { name, value } = target;
+
+    this.setState({ [name]: value });
+  }
+
   render() {
     const { value, description, currencies, paymentMethod, category } = this.state;
     const { allCurrencies, isLoading } = this.props;
-    console.log(isLoading);
+
     return isLoading ? <Loading /> : (
       <section>
         <form>
@@ -45,7 +53,7 @@ class Forms extends Component {
               name="value"
               id="value"
               value={ value }
-              onChange={ ({ target }) => this.setState({ value: target.value }) }
+              onChange={ this.handleChange }
               data-testid="value-input"
             />
           </label>
@@ -54,7 +62,7 @@ class Forms extends Component {
             Moeda:
             <select
               value={ currencies }
-              onChange={ ({ target }) => this.setState({ currencies: target.value }) }
+              onChange={ this.handleChange }
               name="currency"
               id="currency"
             >
@@ -71,7 +79,7 @@ class Forms extends Component {
               name="description"
               id="description"
               value={ description }
-              onChange={ ({ target }) => this.setState({ description: target.value }) }
+              onChange={ this.handleChange }
               data-testid="description-input"
             />
           </label>
@@ -82,7 +90,7 @@ class Forms extends Component {
               value={ paymentMethod }
               name="payment"
               id="payment"
-              onChange={ ({ target }) => this.setState({ paymentMethod: target.value }) }
+              onChange={ this.handleChange }
               data-testid="method-input"
             >
               <option value="Dinheiro">Dinheiro</option>
@@ -97,7 +105,7 @@ class Forms extends Component {
               value={ category }
               name="category"
               id="category"
-              onChange={ ({ target }) => this.setState({ category: target.value }) }
+              onChange={ this.handleChange }
               data-testid="tag-input"
             >
               <option value="Alimentação">Alimentação</option>
