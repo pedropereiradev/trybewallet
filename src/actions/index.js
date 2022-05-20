@@ -1,19 +1,27 @@
 export const LOGIN = 'LOGIN';
-export const GET_CURRENCIES = 'GET_CURRENCIES';
+
+export const GET_DATA = 'GET_DATA';
+
 export const GET_CURRENCIES_SUCESS = 'GET_CURRENCIES_SUCESS';
 export const GET_CURRENCIES_FAIL = 'GET_CURRENCIES_FAIL';
 
+export const GET_EXPENSES_SUCESS = 'GET_EXPENSES_SUCESS';
+export const GET_EXPENSES_FAIL = 'GET_EXPENSES_FAIL';
+
 const EXCHANGE_BASE_API = 'https://economia.awesomeapi.com.br';
 
+// Login Action
 export const login = (email) => ({
   type: LOGIN,
   email,
 });
 
-export const getCurrencies = () => ({
-  type: GET_CURRENCIES,
+// Await API Action
+export const getData = () => ({
+  type: GET_DATA,
 });
 
+// Currencies Actions
 export const getCurrenciesSucess = (currencies) => ({
   type: GET_CURRENCIES_SUCESS,
   currencies,
@@ -24,7 +32,7 @@ export const getCurrenciesFail = () => ({
 });
 
 export const getCurrenciesThunk = () => async (dispatch) => {
-  dispatch(getCurrencies());
+  dispatch(getData());
   try {
     const response = await fetch(`${EXCHANGE_BASE_API}/json/all`);
     const currencies = await response.json();
@@ -34,5 +42,32 @@ export const getCurrenciesThunk = () => async (dispatch) => {
     );
   } catch (error) {
     dispatch(getCurrenciesFail());
+  }
+};
+
+// Expenses Action
+export const getExpensesSucess = (expenses, exchanges) => {
+  expenses.exchangeRates = exchanges;
+  return {
+    type: GET_EXPENSES_SUCESS,
+    expenses,
+  };
+};
+
+export const getExpensesFail = () => ({
+  type: GET_CURRENCIES_FAIL,
+});
+
+// https://www.w3schools.com/howto/howto_js_remove_property_object.asp
+export const getExpensesThunk = (expenses) => async (dispatch) => {
+  dispatch(getData());
+  try {
+    const response = await fetch(`${EXCHANGE_BASE_API}/json/all`);
+    const exchanges = await response.json();
+    delete exchanges.USDT;
+
+    dispatch(getExpensesSucess(expenses, exchanges));
+  } catch (error) {
+    dispatch(getExpensesFail());
   }
 };

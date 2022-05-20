@@ -2,21 +2,25 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import Loading from './Loading';
-import { getCurrenciesThunk } from '../actions';
+import { getCurrenciesThunk, getExpensesThunk } from '../actions';
+
+const ALIMENTACAO = 'Alimentação';
 
 class Forms extends Component {
   constructor() {
     super();
 
     this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
 
     this.state = {
-      value: 0,
+      id: 0,
+      value: '0',
       description: '',
-      currencies: '',
-      paymentMethod: '',
-      category: '',
+      currency: '',
+      method: 'Dinheiro',
+      tag: ALIMENTACAO,
+      isDisabled: false,
     };
   }
 
@@ -26,24 +30,51 @@ class Forms extends Component {
 
     const { allCurrencies } = this.props;
 
-    this.setState({
-      currencies: allCurrencies[0],
-      paymentMethod: 'Dinheiro',
-      category: 'Alimentação',
-    });
+    this.setState({ currency: allCurrencies[0] });
   }
 
   handleChange({ target }) {
     const { name, value } = target;
 
-    this.setState({ [name]: value });
+    this.setState({ [name]: value }, () => {
+      const { value: price } = this.state;
+
+      const validPrice = Number(price) >= 0;
+      this.setState({ isDisabled: !validPrice });
+    });
+  }
+
+  handleSubmit(event) {
+    event.preventDefault();
+    const { id, value, description, currency, method, tag } = this.state;
+    const { getExpensesProp, allCurrencies } = this.props;
+    const expenses = {
+      id,
+      value,
+      description,
+      currency,
+      method,
+      tag,
+    };
+
+    getExpensesProp(expenses);
+
+    this.setState((prevState) => ({
+      id: prevState.id + 1,
+      value: '0',
+      description: '',
+      currency: allCurrencies[0],
+      method: 'Dinheiro',
+      tag: ALIMENTACAO,
+    }));
   }
 
   render() {
-    const { value, description, currencies, paymentMethod, category } = this.state;
-    const { allCurrencies, isLoading } = this.props;
+    const { value, description, currency,
+      method, tag, isDisabled } = this.state;
+    const { allCurrencies } = this.props;
 
-    return isLoading ? <Loading /> : (
+    return (
       <section>
         <form>
           <label htmlFor="value">
@@ -61,13 +92,15 @@ class Forms extends Component {
           <label htmlFor="currency">
             Moeda:
             <select
-              value={ currencies }
+              value={ currency }
               onChange={ this.handleChange }
               name="currency"
               id="currency"
             >
-              {allCurrencies.map((currency) => (
-                <option value={ currency } key={ currency }>{currency}</option>
+              {allCurrencies.map((currencyMapped) => (
+                <option value={ currencyMapped } key={ currencyMapped }>
+                  {currencyMapped}
+                </option>
               ))}
             </select>
           </label>
@@ -77,6 +110,7 @@ class Forms extends Component {
             <input
               type="text"
               name="description"
+              placeholder="(opcional)"
               id="description"
               value={ description }
               onChange={ this.handleChange }
@@ -87,8 +121,8 @@ class Forms extends Component {
           <label htmlFor="payment">
             Método de pagamento:
             <select
-              value={ paymentMethod }
-              name="payment"
+              value={ method }
+              name="method"
               id="payment"
               onChange={ this.handleChange }
               data-testid="method-input"
@@ -99,22 +133,30 @@ class Forms extends Component {
             </select>
           </label>
 
-          <label htmlFor="category">
+          <label htmlFor="tag">
             Categoria:
             <select
-              value={ category }
-              name="category"
-              id="category"
+              value={ tag }
+              name="tag"
+              id="tag"
               onChange={ this.handleChange }
               data-testid="tag-input"
             >
-              <option value="Alimentação">Alimentação</option>
+              <option value={ ALIMENTACAO }>Alimentação</option>
               <option value="Lazer">Lazer</option>
               <option value="Trabalho">Trabalho</option>
               <option value="Transporte">Transporte</option>
               <option value="Saúde">Saúde</option>
             </select>
           </label>
+
+          <button
+            type="submit"
+            onClick={ this.handleSubmit }
+            disabled={ isDisabled }
+          >
+            Adicionar despesa
+          </button>
         </form>
       </section>
     );
@@ -123,17 +165,18 @@ class Forms extends Component {
 
 const mapStateToProps = (state) => ({
   allCurrencies: state.wallet.currencies,
-  isLoading: state.wallet.isLoading,
+  allExpenses: state.wallet.expenses,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   getCurrenciesProp: () => dispatch(getCurrenciesThunk()),
+  getExpensesProp: (expenses) => dispatch(getExpensesThunk(expenses)),
 });
 
 Forms.propTypes = {
   allCurrencies: PropTypes.arrayOf(PropTypes.string).isRequired,
-  isLoading: PropTypes.bool.isRequired,
   getCurrenciesProp: PropTypes.func.isRequired,
+  getExpensesProp: PropTypes.func.isRequired,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Forms);
