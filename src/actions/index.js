@@ -8,6 +8,8 @@ export const GET_CURRENCIES_FAIL = 'GET_CURRENCIES_FAIL';
 export const GET_EXPENSES_SUCESS = 'GET_EXPENSES_SUCESS';
 export const GET_EXPENSES_FAIL = 'GET_EXPENSES_FAIL';
 
+export const DELETE_EXPENSE = 'DELETE_EXPENSE';
+
 const EXCHANGE_BASE_API = 'https://economia.awesomeapi.com.br';
 
 // Login Action
@@ -71,3 +73,8 @@ export const getExpensesThunk = (expenses) => async (dispatch) => {
     dispatch(getExpensesFail());
   }
 };
+
+export const deleteExpense = (expenses) => ({
+  type: DELETE_EXPENSE,
+  expenses,
+});
