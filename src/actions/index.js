@@ -9,6 +9,10 @@ export const GET_EXPENSES_SUCESS = 'GET_EXPENSES_SUCESS';
 export const GET_EXPENSES_FAIL = 'GET_EXPENSES_FAIL';
 
 export const DELETE_EXPENSE = 'DELETE_EXPENSE';
+export const UPDATE_EXPENSES = 'UPDATE_EXPENSES';
+
+export const GET_EXPENSE_TO_UPDATE = 'GET_EXPENSE_TO_UPDATE';
+export const REMOVE_EXPENSE_TO_UPDATE = 'REMOVE_EXPENSE_TO_UPDATE';
 
 const EXCHANGE_BASE_API = 'https://economia.awesomeapi.com.br';
 
@@ -77,4 +81,18 @@ export const getExpensesThunk = (expenses) => async (dispatch) => {
 export const deleteExpense = (expenses) => ({
   type: DELETE_EXPENSE,
   expenses,
+});
+
+export const getExpenseToUpdate = (expense) => ({
+  type: GET_EXPENSE_TO_UPDATE,
+  expense,
+});
+
+export const removeExpenseToUpdate = () => ({
+  type: REMOVE_EXPENSE_TO_UPDATE,
+});
+
+export const UpdateExpenses = (expensesUpdated) => ({
+  type: UPDATE_EXPENSES,
+  expensesUpdated,
 });

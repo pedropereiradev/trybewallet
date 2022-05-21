@@ -2,7 +2,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import { getCurrenciesThunk, getExpensesThunk } from '../actions';
+import {
+  getCurrenciesThunk, getExpensesThunk,
+  removeExpenseToUpdate, UpdateExpenses,
+} from '../actions';
 
 const ALIMENTACAO = 'Alimentação';
 
@@ -21,6 +24,7 @@ class Forms extends Component {
       method: 'Dinheiro',
       tag: ALIMENTACAO,
       isDisabled: false,
+      createMode: true,
     };
   }
 
@@ -31,6 +35,11 @@ class Forms extends Component {
     const { allCurrencies } = this.props;
 
     this.setState({ currency: allCurrencies[0] });
+  }
+
+  componentDidUpdate() {
+    const { expenseToEdit } = this.props;
+    if (expenseToEdit.length) this.handleEdit();
   }
 
   handleChange({ target }) {
@@ -46,8 +55,10 @@ class Forms extends Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    const { id, value, description, currency, method, tag } = this.state;
-    const { getExpensesProp, allCurrencies } = this.props;
+    const { id, value, description, currency, method, tag, createMode } = this.state;
+    const { getExpensesProp, allCurrencies,
+      allExpenses, updateExpensesProp } = this.props;
+
     const expenses = {
       id,
       value,
@@ -56,22 +67,49 @@ class Forms extends Component {
       method,
       tag,
     };
+    if (createMode) {
+      getExpensesProp(expenses);
+      this.setState((prevState) => ({ id: prevState.id + 1 }));
+    } else {
+      allExpenses[id].value = value;
+      allExpenses[id].description = description;
+      allExpenses[id].currency = currency;
+      allExpenses[id].method = method;
+      allExpenses[id].tag = tag;
 
-    getExpensesProp(expenses);
+      updateExpensesProp(allExpenses);
+    }
 
-    this.setState((prevState) => ({
-      id: prevState.id + 1,
+    this.setState({
       value: '0',
       description: '',
       currency: allCurrencies[0],
       method: 'Dinheiro',
       tag: ALIMENTACAO,
-    }));
+      createMode: true,
+    });
+  }
+
+  handleEdit() {
+    const { expenseToEdit, removeExpenseToUpdateProp } = this.props;
+    const { id, value, description, currency, method, tag } = expenseToEdit[0];
+    this.setState({
+      id,
+      value,
+      description,
+      currency,
+      method,
+      tag,
+      isDisabled: false,
+      createMode: false,
+    });
+
+    removeExpenseToUpdateProp();
   }
 
   render() {
     const { value, description, currency,
-      method, tag, isDisabled } = this.state;
+      method, tag, isDisabled, createMode } = this.state;
     const { allCurrencies } = this.props;
 
     return (
@@ -96,6 +134,7 @@ class Forms extends Component {
               onChange={ this.handleChange }
               name="currency"
               id="currency"
+              data-testid="currency-input"
             >
               {allCurrencies.map((currencyMapped) => (
                 <option value={ currencyMapped } key={ currencyMapped }>
@@ -155,7 +194,7 @@ class Forms extends Component {
             onClick={ this.handleSubmit }
             disabled={ isDisabled }
           >
-            Adicionar despesa
+            {createMode ? 'Adicionar despesa' : 'Editar despesa'}
           </button>
         </form>
       </section>
@@ -166,17 +205,28 @@ class Forms extends Component {
 const mapStateToProps = (state) => ({
   allCurrencies: state.wallet.currencies,
   allExpenses: state.wallet.expenses,
+  expenseToEdit: state.wallet.expenseToEdit,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   getCurrenciesProp: () => dispatch(getCurrenciesThunk()),
   getExpensesProp: (expenses) => dispatch(getExpensesThunk(expenses)),
+  removeExpenseToUpdateProp: () => dispatch(removeExpenseToUpdate()),
+  updateExpensesProp: (expenses) => dispatch(UpdateExpenses(expenses)),
 });
 
 Forms.propTypes = {
   allCurrencies: PropTypes.arrayOf(PropTypes.string).isRequired,
+  allExpenses: PropTypes.arrayOf(PropTypes.object).isRequired,
+  expenseToEdit: PropTypes.arrayOf(PropTypes.object),
   getCurrenciesProp: PropTypes.func.isRequired,
   getExpensesProp: PropTypes.func.isRequired,
+  updateExpensesProp: PropTypes.func.isRequired,
+  removeExpenseToUpdateProp: PropTypes.func.isRequired,
+};
+
+Forms.defaultProps = {
+  expenseToEdit: [],
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Forms);

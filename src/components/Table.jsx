@@ -1,13 +1,19 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { deleteExpense } from '../actions';
+import { deleteExpense, getExpenseToUpdate } from '../actions';
 
 class Table extends Component {
   handleDelete(id) {
     const { allExpenses, deleteExpenseProp } = this.props;
 
     deleteExpenseProp(allExpenses.filter((expense) => expense.id !== id));
+  }
+
+  handleEdit(id) {
+    const { allExpenses, getExpenseToUpdateProp } = this.props;
+
+    getExpenseToUpdateProp(allExpenses.find((expense) => expense.id === id));
   }
 
   render() {
@@ -50,6 +56,13 @@ class Table extends Component {
                   <td>
                     <button
                       type="button"
+                      data-testid="edit-btn"
+                      onClick={ () => this.handleEdit(id) }
+                    >
+                      Editar
+                    </button>
+                    <button
+                      type="button"
                       data-testid="delete-btn"
                       onClick={ () => this.handleDelete(id) }
                     >
@@ -72,11 +85,13 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   deleteExpenseProp: (expenses) => dispatch(deleteExpense(expenses)),
+  getExpenseToUpdateProp: (expense) => dispatch(getExpenseToUpdate(expense)),
 });
 
 Table.propTypes = {
   allExpenses: PropTypes.arrayOf(PropTypes.object).isRequired,
   deleteExpenseProp: PropTypes.func.isRequired,
+  getExpenseToUpdateProp: PropTypes.func.isRequired,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Table);
