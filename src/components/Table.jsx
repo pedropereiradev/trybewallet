@@ -4,20 +4,8 @@ import { connect } from 'react-redux';
 import { deleteExpense, getExpenseToUpdate } from '../actions';
 
 class Table extends Component {
-  handleDelete(id) {
-    const { allExpenses, deleteExpenseProp } = this.props;
-
-    deleteExpenseProp(allExpenses.filter((expense) => expense.id !== id));
-  }
-
-  handleEdit(id) {
-    const { allExpenses, getExpenseToUpdateProp } = this.props;
-
-    getExpenseToUpdateProp(allExpenses.find((expense) => expense.id === id));
-  }
-
   render() {
-    const { allExpenses } = this.props;
+    const { allExpenses, deleteExpenseProp, getExpenseToUpdateProp } = this.props;
     return (
       <main>
         <table>
@@ -57,14 +45,16 @@ class Table extends Component {
                     <button
                       type="button"
                       data-testid="edit-btn"
-                      onClick={ () => this.handleEdit(id) }
+                      onClick={ () => getExpenseToUpdateProp(allExpenses
+                        .find((expense) => expense.id === id)) }
                     >
                       Editar
                     </button>
                     <button
                       type="button"
                       data-testid="delete-btn"
-                      onClick={ () => this.handleDelete(id) }
+                      onClick={ () => deleteExpenseProp(allExpenses
+                        .filter((expense) => expense.id !== id)) }
                     >
                       Remover
                     </button>
