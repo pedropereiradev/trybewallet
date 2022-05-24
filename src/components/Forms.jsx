@@ -113,9 +113,9 @@ class Forms extends Component {
     const { allCurrencies } = this.props;
 
     return (
-      <section>
-        <form>
-          <label htmlFor="value">
+      <section className="d-flex justify-content-center mb-3">
+        <form className="form-inline">
+          <label htmlFor="value" className="mr-4">
             Valor:
             <input
               type="number"
@@ -124,10 +124,11 @@ class Forms extends Component {
               value={ value }
               onChange={ this.handleChange }
               data-testid="value-input"
+              className="form-control ml-2"
             />
           </label>
 
-          <label htmlFor="currency">
+          <label htmlFor="currency" className="mr-4">
             Moeda:
             <select
               value={ currency }
@@ -135,6 +136,7 @@ class Forms extends Component {
               name="currency"
               id="currency"
               data-testid="currency-input"
+              className="form-control ml-2"
             >
               {allCurrencies.map((currencyMapped) => (
                 <option value={ currencyMapped } key={ currencyMapped }>
@@ -144,20 +146,7 @@ class Forms extends Component {
             </select>
           </label>
 
-          <label htmlFor="description">
-            Descrição:
-            <input
-              type="text"
-              name="description"
-              placeholder="(opcional)"
-              id="description"
-              value={ description }
-              onChange={ this.handleChange }
-              data-testid="description-input"
-            />
-          </label>
-
-          <label htmlFor="payment">
+          <label htmlFor="payment" className="mr-4">
             Método de pagamento:
             <select
               value={ method }
@@ -165,6 +154,7 @@ class Forms extends Component {
               id="payment"
               onChange={ this.handleChange }
               data-testid="method-input"
+              className="form-control ml-2"
             >
               <option value="Dinheiro">Dinheiro</option>
               <option value="Cartão de crédito">Cartão de crédito</option>
@@ -172,7 +162,7 @@ class Forms extends Component {
             </select>
           </label>
 
-          <label htmlFor="tag">
+          <label htmlFor="tag" className="mr-4">
             Categoria:
             <select
               value={ tag }
@@ -180,6 +170,7 @@ class Forms extends Component {
               id="tag"
               onChange={ this.handleChange }
               data-testid="tag-input"
+              className="form-control ml-2"
             >
               <option value={ ALIMENTACAO }>Alimentação</option>
               <option value="Lazer">Lazer</option>
@@ -189,10 +180,25 @@ class Forms extends Component {
             </select>
           </label>
 
+          <label htmlFor="description" className="mr-4">
+            Descrição:
+            <input
+              type="text"
+              name="description"
+              placeholder="(opcional)"
+              id="description"
+              value={ description }
+              onChange={ this.handleChange }
+              data-testid="description-input"
+              className="form-control ml-2"
+            />
+          </label>
+
           <button
             type="submit"
             onClick={ this.handleSubmit }
             disabled={ isDisabled }
+            className="btn btn-success"
           >
             {createMode ? 'Adicionar despesa' : 'Editar despesa'}
           </button>
