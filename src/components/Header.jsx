@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import walletIcon from '../assets/wallet.svg';
 
 class Header extends Component {
   calculateExpenses() {
@@ -21,14 +22,25 @@ class Header extends Component {
   render() {
     const { userEmail } = this.props;
     return (
-      <header>
-        <h2>TrybeWallet</h2>
-        <p data-testid="email-field">{userEmail}</p>
-        <section>
-          <p>
-            Despesa total:
+      <header
+        className="d-flex align-items-center justify-content-between px-3"
+      >
+        <section className="d-flex align-items-center">
+          <img src={ walletIcon } alt="Wallet representation" />
+          <h2>TrybeWallet</h2>
+        </section>
+        <section className="d-flex flex-column justify-content-around">
+          <p className="font-italic text-secondary" data-testid="email-field">
+            <small>
+              Email:
+              {' '}
+              {userEmail}
+            </small>
+          </p>
+          <p className="font-italic border border-success rounded p-2">
+            Despesa total: R$
             {' '}
-            <span data-testid="total-field">
+            <span className="font-weight-bold" data-testid="total-field">
               {this.calculateExpenses()}
             </span>
             {' '}
