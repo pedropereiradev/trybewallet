@@ -56,7 +56,7 @@ class Login extends React.Component {
             src={ ilustration }
             alt="Woman doing bitcoin trading Illustration by Lihin Souw on IconScout"
           />
-          <h2 className="d-flex justify-content-center">Trybewallet</h2>
+          <h2 className="d-flex justify-content-center text-monospace">TRYBEWALLET</h2>
           <section
             className="d-flex flex-column"
           >
